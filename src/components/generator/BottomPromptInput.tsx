@@ -1,0 +1,136 @@
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Settings, Sparkles, Send, Image as ImageIcon, Key, ChevronUp } from "lucide-react";
+import { useState } from "react";
+
+interface BottomPromptInputProps {
+  prompt: string;
+  isGenerating: boolean;
+  apiKey: string;
+  onPromptChange: (value: string) => void;
+  onGenerate: () => void;
+}
+
+export function BottomPromptInput({
+  prompt,
+  isGenerating,
+  apiKey,
+  onPromptChange,
+  onGenerate
+}: BottomPromptInputProps) {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 lg:left-[22rem] z-40">
+      <div className="p-4 lg:p-8">
+        <div className="rounded-lg border text-card-foreground backdrop-blur-xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border-white/10 shadow-2xl">
+          <div className="p-4 lg:p-6 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent rounded-lg pointer-events-none" />
+            
+            <div className="relative z-10">
+              {/* Advanced Settings Toggle - Desktop Only */}
+              <div className="mb-4 hidden lg:block">
+                <Button
+                  variant="ghost"
+                  className="flex items-center justify-between w-full mb-3 group"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                >
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4 text-primary" />
+                    <label className="text-sm font-medium text-white">Advanced Settings</label>
+                    <span className="text-xs text-gray-400">(Video Generator)</span>
+                  </div>
+                  <ChevronUp 
+                    className={`h-4 w-4 text-gray-400 transition-all ${showAdvanced ? 'rotate-180' : ''}`} 
+                  />
+                </Button>
+              </div>
+
+              {/* Main Input Area */}
+              <div className="flex gap-3">
+                {/* Image Upload - Desktop */}
+                <div className="hidden md:flex">
+                  <input type="file" accept="image/*" className="hidden" id="image-upload-desktop" />
+                  <label
+                    htmlFor="image-upload-desktop"
+                    className="h-[60px] w-12 border border-white/10 rounded-md bg-white/5 hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center group"
+                    title="Add image for image-to-video generation"
+                  >
+                    <ImageIcon className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
+                  </label>
+                </div>
+
+                {/* Text Input */}
+                <div className="flex-1 relative">
+                  <Textarea
+                    className="min-h-[60px] max-h-32 resize-none bg-white/5 border-white/10 text-white placeholder:text-gray-500 pr-20 md:pl-4 pl-12"
+                    placeholder="Tell me what you want to create with Video Generator..."
+                    value={prompt}
+                    onChange={(e) => onPromptChange(e.target.value)}
+                  />
+
+                  {/* Image Upload - Mobile */}
+                  <div className="md:hidden">
+                    <input type="file" accept="image/*" className="hidden" id="image-upload-mobile" />
+                    <label
+                      htmlFor="image-upload-mobile"
+                      className="absolute bottom-2 left-2 h-8 w-8 p-0 rounded-md hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center group z-10"
+                      title="Add image for image-to-video generation"
+                    >
+                      <ImageIcon className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
+                    </label>
+                  </div>
+
+                  {/* Send Button */}
+                  <Button
+                    className="absolute bottom-2 right-2 h-8 w-8 p-0 bg-primary hover:bg-primary/90"
+                    onClick={onGenerate}
+                    disabled={isGenerating || !apiKey || !prompt.trim()}
+                  >
+                    {isGenerating ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Bottom Row */}
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!apiKey || !prompt.trim()}
+                    className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/30 hover:border-purple-400/50 hover:bg-gradient-to-r hover:from-purple-500/30 hover:to-pink-500/30 text-purple-200 hover:text-purple-100 transition-all duration-200"
+                    title="Transform your prompt into a detailed cinematic description with professional camera work, lighting, character details, and atmosphere"
+                  >
+                    <Sparkles className="h-3 w-3 mr-1.5" />
+                    Cinematic Enhancement
+                  </Button>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <span>{prompt.length}/1000</span>
+                </div>
+              </div>
+
+              {/* Warning Messages */}
+              {!apiKey && (
+                <p className="text-xs text-amber-400 mt-2 flex items-center gap-1">
+                  <Key className="h-3 w-3" />
+                  Please enter your API key to start generating content
+                </p>
+              )}
+
+              <p className="text-xs text-gray-500 mt-2">
+                Press Enter to send, Shift+Enter for new line
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

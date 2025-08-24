@@ -1,17 +1,16 @@
-import { Navigation } from "@/components/Navigation";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useGeneratorState } from "@/hooks/useGeneratorState";
-import { ApiKeySection } from "@/components/generator/ApiKeySection";
-import { AIToolsSection } from "@/components/generator/AIToolsSection";
-import { VideoConfigSection } from "@/components/generator/VideoConfigSection";
-import { PromptSection } from "@/components/generator/PromptSection";
-import { ContentGallery } from "@/components/generator/ContentGallery";
+import { Sidebar } from "@/components/generator/Sidebar";
+import { SettingsSidebar } from "@/components/generator/SettingsSidebar";
+import { MainContent } from "@/components/generator/MainContent";
+import { BottomPromptInput } from "@/components/generator/BottomPromptInput";
 
 export default function Generator() {
   const { state, updateState, updateVideoConfig } = useGeneratorState();
   const { toast } = useToast();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleGenerate = async () => {
     if (!state.apiKey) {
@@ -50,51 +49,43 @@ export default function Generator() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      <div className="container mx-auto px-6 pt-24 pb-12">
-        <div className="mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
-          
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4">
-            <span className="ai-gradient-text">AI Content Generator</span>
-          </h1>
-        </div>
+    <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-black relative">
+        {/* Left Sidebar */}
+        <Sidebar
+          apiKey={state.apiKey}
+          onApiKeyChange={(value) => updateState({ apiKey: value })}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Panel - Configuration */}
-          <div className="lg:col-span-2 space-y-6">
-            <ApiKeySection 
-              apiKey={state.apiKey}
-              onApiKeyChange={(value) => updateState({ apiKey: value })}
-            />
+        {/* Right Settings Sidebar */}
+        <SettingsSidebar
+          config={state.videoConfig}
+          negativePrompt={state.negativePrompt}
+          onConfigChange={updateVideoConfig}
+          onNegativePromptChange={(value) => updateState({ negativePrompt: value })}
+          isOpen={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+        />
 
-            <AIToolsSection />
+        {/* Main Content */}
+        <MainContent
+          onOpenSidebar={() => setSidebarOpen(true)}
+          onOpenSettings={() => setSettingsOpen(true)}
+        />
 
-            <VideoConfigSection
-              config={state.videoConfig}
-              negativePrompt={state.negativePrompt}
-              cinematicEnhancement={state.cinematicEnhancement}
-              onConfigChange={updateVideoConfig}
-              onNegativePromptChange={(value) => updateState({ negativePrompt: value })}
-              onCinematicEnhancementChange={(value) => updateState({ cinematicEnhancement: value })}
-            />
+        {/* Bottom Prompt Input */}
+        <BottomPromptInput
+          prompt={state.prompt}
+          isGenerating={state.isGenerating}
+          apiKey={state.apiKey}
+          onPromptChange={(value) => updateState({ prompt: value })}
+          onGenerate={handleGenerate}
+        />
 
-            <PromptSection
-              prompt={state.prompt}
-              isGenerating={state.isGenerating}
-              onPromptChange={(value) => updateState({ prompt: value })}
-              onGenerate={handleGenerate}
-            />
-          </div>
-
-          {/* Right Panel - Content Gallery */}
-          <ContentGallery />
-        </div>
+        {/* Toast notification area */}
+        <div className="fixed bottom-6 right-6 z-50 space-y-3 max-w-md" />
       </div>
     </div>
   );
