@@ -5,6 +5,17 @@ export interface VideoConfig {
   duration: string;
 }
 
+export interface VideoResult {
+  id: string;
+  prompt: string;
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  status: 'generating' | 'completed' | 'error';
+  progress?: number;
+  createdAt: Date;
+  completedAt?: Date;
+}
+
 export interface GeneratorState {
   apiKey: string;
   prompt: string;
@@ -12,6 +23,7 @@ export interface GeneratorState {
   cinematicEnhancement: string;
   isGenerating: boolean;
   videoConfig: VideoConfig;
+  videoResults: VideoResult[];
 }
 
 export interface GeneratorFormProps {

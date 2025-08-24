@@ -7,7 +7,14 @@ import { MainContent } from "@/components/generator/MainContent";
 import { BottomPromptInput } from "@/components/generator/BottomPromptInput";
 
 export default function Generator() {
-  const { state, updateState, updateVideoConfig } = useGeneratorState();
+  const { 
+    state, 
+    updateState, 
+    updateVideoConfig, 
+    addVideoResult, 
+    updateVideoResult, 
+    removeVideoResult 
+  } = useGeneratorState();
   const { toast } = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -33,19 +40,62 @@ export default function Generator() {
 
     updateState({ isGenerating: true });
     
+    // Create new video result
+    const newResult = {
+      id: Date.now().toString(),
+      prompt: state.prompt,
+      status: 'generating' as const,
+      progress: 0,
+      createdAt: new Date(),
+    };
+    
+    addVideoResult(newResult);
+    
     // Simulate generation process
     toast({
       title: "Generation Started",
       description: "Your video is being generated...",
     });
 
+    // Simulate progress updates
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += Math.random() * 20;
+      if (progress < 95) {
+        updateVideoResult(newResult.id, { progress: Math.min(progress, 95) });
+      }
+    }, 500);
+
     setTimeout(() => {
-      updateState({ isGenerating: false });
+      clearInterval(progressInterval);
+      updateVideoResult(newResult.id, { 
+        status: 'completed',
+        progress: 100,
+        completedAt: new Date(),
+        thumbnailUrl: `https://picsum.photos/320/180?random=${newResult.id}`,
+        videoUrl: `https://example.com/video-${newResult.id}.mp4`
+      });
+      
+      updateState({ isGenerating: false, prompt: "" });
       toast({
         title: "Video Generated!",
         description: "Your AI video has been created successfully",
       });
-    }, 3000);
+    }, 8000);
+  };
+
+  const handleDownload = (id: string) => {
+    toast({
+      title: "Download Started",
+      description: "Your video download will begin shortly",
+    });
+  };
+
+  const handleShare = (id: string) => {
+    toast({
+      title: "Link Copied",
+      description: "Video share link copied to clipboard",
+    });
   };
 
   return (
@@ -71,8 +121,12 @@ export default function Generator() {
 
         {/* Main Content */}
         <MainContent
+          videoResults={state.videoResults}
           onOpenSidebar={() => setSidebarOpen(true)}
           onOpenSettings={() => setSettingsOpen(true)}
+          onDeleteResult={removeVideoResult}
+          onDownloadResult={handleDownload}
+          onShareResult={handleShare}
         />
 
         {/* Bottom Prompt Input */}

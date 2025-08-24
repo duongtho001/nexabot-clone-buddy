@@ -1,12 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Menu, Settings, Video } from "lucide-react";
+import { VideoResult } from "@/components/generator/VideoResult";
+import { VideoResult as VideoResultType } from "@/types/generator";
 
 interface MainContentProps {
+  videoResults: VideoResultType[];
   onOpenSidebar: () => void;
   onOpenSettings: () => void;
+  onDeleteResult: (id: string) => void;
+  onDownloadResult: (id: string) => void;
+  onShareResult: (id: string) => void;
 }
 
-export function MainContent({ onOpenSidebar, onOpenSettings }: MainContentProps) {
+export function MainContent({ 
+  videoResults,
+  onOpenSidebar, 
+  onOpenSettings,
+  onDeleteResult,
+  onDownloadResult,
+  onShareResult
+}: MainContentProps) {
+  const completedCount = videoResults.filter(r => r.status === 'completed').length;
+  const generatingCount = videoResults.filter(r => r.status === 'generating').length;
+
   return (
     <div className="lg:ml-[22rem] min-h-screen flex flex-col">
       {/* Mobile Header */}
@@ -50,20 +66,47 @@ export function MainContent({ onOpenSidebar, onOpenSettings }: MainContentProps)
                 <div>
                   <h1 className="text-xl font-semibold text-white">Content Gallery</h1>
                   <p className="text-sm text-gray-400">
-                    0 completed • 0 generating
+                    {completedCount} completed • {generatingCount} generating
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="flex-1 overflow-hidden p-2 lg:p-6">
-              <div className="h-full flex items-center justify-center text-center">
-                <div className="max-w-md">
-                  <Video className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">No content yet</h3>
-                  <p className="text-gray-400 mb-6">Generate your first content to get started!</p>
+            <div className="flex-1 overflow-y-auto p-2 lg:p-6 dark-scrollbar">
+              {videoResults.length === 0 ? (
+                /* Empty State */
+                <div className="h-full flex items-center justify-center text-center">
+                  <div className="max-w-md">
+                    <Video className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-white mb-2">No content yet</h3>
+                    <p className="text-gray-400 mb-6">Generate your first content to get started!</p>
+                    
+                    {/* Quick Start Tips */}
+                    <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4 text-left">
+                      <h4 className="text-sm font-medium text-white mb-2">💡 Quick Tips:</h4>
+                      <ul className="text-xs text-gray-400 space-y-1">
+                        <li>• Be specific with your video descriptions</li>
+                        <li>• Include camera angles and movements</li>
+                        <li>• Mention lighting and atmosphere</li>
+                        <li>• Specify character actions and emotions</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* Video Results Grid */
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {videoResults.map((result) => (
+                    <VideoResult
+                      key={result.id}
+                      {...result}
+                      onDelete={onDeleteResult}
+                      onDownload={onDownloadResult}
+                      onShare={onShareResult}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
