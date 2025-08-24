@@ -22,6 +22,81 @@ interface VeoApiResponse {
   };
 }
 
+// Function to get OAuth 2.0 access token from service account
+async function getAccessToken(serviceAccountKey: string): Promise<string> {
+  try {
+    const serviceAccount = JSON.parse(serviceAccountKey);
+    
+    // Create JWT header and payload
+    const header = {
+      alg: 'RS256',
+      typ: 'JWT',
+      kid: serviceAccount.private_key_id
+    };
+    
+    const now = Math.floor(Date.now() / 1000);
+    const payload = {
+      iss: serviceAccount.client_email,
+      sub: serviceAccount.client_email,
+      scope: 'https://www.googleapis.com/auth/cloud-platform',
+      aud: 'https://oauth2.googleapis.com/token',
+      iat: now,
+      exp: now + 3600 // 1 hour
+    };
+    
+    // Create JWT
+    const encoder = new TextEncoder();
+    const headerB64 = btoa(JSON.stringify(header)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    const payloadB64 = btoa(JSON.stringify(payload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    
+    const message = `${headerB64}.${payloadB64}`;
+    
+    // Import private key
+    const privateKey = serviceAccount.private_key.replace(/\\n/g, '\n');
+    const keyData = await crypto.subtle.importKey(
+      'pkcs8',
+      encoder.encode(privateKey.replace('-----BEGIN PRIVATE KEY-----\n', '').replace('\n-----END PRIVATE KEY-----', '').replace(/\n/g, '')),
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+        hash: 'SHA-256'
+      },
+      false,
+      ['sign']
+    );
+    
+    // Sign the JWT
+    const signature = await crypto.subtle.sign(
+      'RSASSA-PKCS1-v1_5',
+      keyData,
+      encoder.encode(message)
+    );
+    
+    const signatureB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    
+    const jwt = `${message}.${signatureB64}`;
+    
+    // Exchange JWT for access token
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+    });
+    
+    if (!tokenResponse.ok) {
+      throw new Error(`Token request failed: ${tokenResponse.status}`);
+    }
+    
+    const tokenData = await tokenResponse.json();
+    return tokenData.access_token;
+  } catch (error) {
+    console.error('Failed to get access token:', error);
+    throw error;
+  }
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -31,11 +106,11 @@ Deno.serve(async (req) => {
   try {
     console.log('Video generation request received');
     
-    const veoApiKey = Deno.env.get('VEO_API_KEY');
-    if (!veoApiKey) {
-      console.error('VEO API key not found');
+    const serviceAccountKey = Deno.env.get('GOOGLE_SERVICE_ACCOUNT_KEY');
+    if (!serviceAccountKey) {
+      console.error('Google service account key not found');
       return new Response(
-        JSON.stringify({ error: 'VEO API key not configured' }),
+        JSON.stringify({ error: 'Google service account key not configured' }),
         { 
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -77,13 +152,18 @@ Deno.serve(async (req) => {
 
     console.log('VEO API request body:', veoRequestBody);
 
+    // Get OAuth 2.0 access token
+    console.log('Getting OAuth 2.0 access token...');
+    const accessToken = await getAccessToken(serviceAccountKey);
+    console.log('Access token obtained successfully');
+
     // Call Google VEO API
     const veoResponse = await fetch(
       'https://aiplatform.googleapis.com/v1/projects/pwiwrphpwiwrsgtxamqt/locations/us-central1/publishers/google/models/veo-3.0-generate-preview:generateContent',
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${veoApiKey}`,
+          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
