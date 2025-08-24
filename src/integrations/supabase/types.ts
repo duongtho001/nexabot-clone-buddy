@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      generation_requests: {
+        Row: {
+          completed_at: string | null
+          config: Json | null
+          created_at: string
+          error_message: string | null
+          id: string
+          prompt: string
+          result_url: string | null
+          service_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          config?: Json | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          prompt: string
+          result_url?: string | null
+          service_type: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          config?: Json | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          prompt?: string
+          result_url?: string | null
+          service_type?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_api_keys: {
+        Row: {
+          created_at: string
+          encrypted_key: string
+          id: string
+          service_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          encrypted_key: string
+          id?: string
+          service_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          encrypted_key?: string
+          id?: string
+          service_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       videos: {
         Row: {
           aspect_ratio: string
