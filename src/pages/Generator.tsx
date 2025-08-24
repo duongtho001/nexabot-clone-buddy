@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useGeneratorState } from "@/hooks/useGeneratorState";
+import { generateVideo } from "@/services/videoGeneration";
 import { Sidebar } from "@/components/generator/Sidebar";
 import { SettingsSidebar } from "@/components/generator/SettingsSidebar";
 import { MainContent } from "@/components/generator/MainContent";
@@ -23,15 +24,6 @@ export default function Generator() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleGenerate = async () => {
-    if (!state.apiKey) {
-      toast({
-        title: "API Key Required",
-        description: "Please enter your API key to start generating content",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (!state.prompt) {
       toast({
         title: "Prompt Required", 
@@ -54,37 +46,59 @@ export default function Generator() {
     
     addVideoResult(newResult);
     
-    // Simulate generation process
     toast({
       title: "Generation Started",
       description: "Your video is being generated...",
     });
 
-    // Simulate progress updates
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-      progress += Math.random() * 20;
-      if (progress < 95) {
-        updateVideoResult(newResult.id, { progress: Math.min(progress, 95) });
-      }
-    }, 500);
+    try {
+      const result = await generateVideo(
+        state.prompt,
+        state.videoConfig,
+        state.negativePrompt,
+        state.cinematicEnhancement
+      );
 
-    setTimeout(() => {
-      clearInterval(progressInterval);
+      if (result.success && result.videoUrl) {
+        updateVideoResult(newResult.id, { 
+          status: 'completed',
+          progress: 100,
+          completedAt: new Date(),
+          thumbnailUrl: `https://picsum.photos/320/180?random=${newResult.id}`,
+          videoUrl: result.videoUrl
+        });
+        
+        toast({
+          title: "Video Generated!",
+          description: "Your AI video has been created successfully",
+        });
+      } else {
+        updateVideoResult(newResult.id, { 
+          status: 'error',
+          progress: 0,
+        });
+        
+        toast({
+          title: "Generation Failed",
+          description: result.error || "Failed to generate video",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Video generation error:', error);
       updateVideoResult(newResult.id, { 
-        status: 'completed',
-        progress: 100,
-        completedAt: new Date(),
-        thumbnailUrl: `https://picsum.photos/320/180?random=${newResult.id}`,
-        videoUrl: `https://example.com/video-${newResult.id}.mp4`
+        status: 'error',
+        progress: 0,
       });
       
-      updateState({ isGenerating: false, prompt: "" });
       toast({
-        title: "Video Generated!",
-        description: "Your AI video has been created successfully",
+        title: "Generation Failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
       });
-    }, 8000);
+    } finally {
+      updateState({ isGenerating: false, prompt: "" });
+    }
   };
 
   const handleDownload = (id: string) => {

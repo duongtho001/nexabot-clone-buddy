@@ -31,11 +31,11 @@ Deno.serve(async (req) => {
   try {
     console.log('Video generation request received');
     
-    const apiKey = Deno.env.get('GOOGLE_AI_API_KEY');
-    if (!apiKey) {
-      console.error('Google AI API key not found');
+    const veoApiKey = Deno.env.get('VEO_API_KEY');
+    if (!veoApiKey) {
+      console.error('VEO API key not found');
       return new Response(
-        JSON.stringify({ error: 'Google AI API key not configured' }),
+        JSON.stringify({ error: 'VEO API key not configured' }),
         { 
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -79,11 +79,11 @@ Deno.serve(async (req) => {
 
     // Call Google VEO API
     const veoResponse = await fetch(
-      'https://aiplatform.googleapis.com/v1/projects/YOUR_PROJECT_ID/locations/us-central1/publishers/google/models/veo-3.0-generate-preview:generateContent',
+      'https://aiplatform.googleapis.com/v1/projects/pwiwrphpwiwrsgtxamqt/locations/us-central1/publishers/google/models/veo-3.0-generate-preview:generateContent',
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
+          'Authorization': `Bearer ${veoApiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

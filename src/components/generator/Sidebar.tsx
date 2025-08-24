@@ -100,7 +100,12 @@ export function Sidebar({
                 value={apiKey}
                 onChange={(e) => onApiKeyChange(e.target.value)}
               />
-              <p className="text-xs text-gray-400 mt-1">Required for AI generation</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {activeTool === 'video' || activeTool === 'filmmaker' 
+                  ? 'Video generation uses server-side API key (optional for other tools)'
+                  : 'Required for AI generation'
+                }
+              </p>
             </div>
 
             {/* AI Tools Section */}

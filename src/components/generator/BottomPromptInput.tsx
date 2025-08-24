@@ -118,7 +118,7 @@ export function BottomPromptInput({
                   <Button
                     className="absolute bottom-2 right-2 h-8 w-8 p-0 bg-primary hover:bg-primary/90"
                     onClick={onGenerate}
-                    disabled={isGenerating || !apiKey || !prompt.trim()}
+                    disabled={isGenerating || !prompt.trim()}
                   >
                     {isGenerating ? (
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -135,7 +135,7 @@ export function BottomPromptInput({
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={!apiKey || !prompt.trim()}
+                    disabled={!prompt.trim()}
                     className="group relative overflow-hidden bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 hover:border-purple-400/40 text-purple-200 hover:text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-500/20 before:to-pink-500/20 before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700"
                     title="Transform your prompt into a detailed cinematic description with professional camera work, lighting, character details, and atmosphere"
                   >
@@ -150,7 +150,7 @@ export function BottomPromptInput({
               </div>
 
               {/* Warning Messages */}
-              {!apiKey && (
+              {activeTool !== 'video' && activeTool !== 'filmmaker' && !apiKey && (
                 <p className="text-xs text-amber-400 mt-2 flex items-center gap-1">
                   <Key className="h-3 w-3" />
                   Please enter your API key to start generating content
