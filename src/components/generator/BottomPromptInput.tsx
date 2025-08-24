@@ -3,10 +3,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Settings, Sparkles, Send, Image as ImageIcon, Key, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
+import { AITool } from "@/types/generator";
+
 interface BottomPromptInputProps {
   prompt: string;
   isGenerating: boolean;
   apiKey: string;
+  activeTool: AITool;
   onPromptChange: (value: string) => void;
   onGenerate: () => void;
 }
@@ -15,10 +18,41 @@ export function BottomPromptInput({
   prompt,
   isGenerating,
   apiKey,
+  activeTool,
   onPromptChange,
   onGenerate
 }: BottomPromptInputProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const getPlaceholderText = () => {
+    switch (activeTool) {
+      case 'video':
+        return "Tell me what you want to create with Video Generator...";
+      case 'filmmaker':
+        return "Describe your cinematic story for Filmmaker...";
+      case 'voice':
+        return "Enter text for Voice Over Generator...";
+      case 'microstock':
+        return "Describe the image for Microstock Generator...";
+      default:
+        return "Tell me what you want to create...";
+    }
+  };
+
+  const getToolName = () => {
+    switch (activeTool) {
+      case 'video':
+        return "Video Generator";
+      case 'filmmaker':
+        return "Filmmaker";
+      case 'voice':
+        return "Voice Over Generator";
+      case 'microstock':
+        return "Microstock Generator";
+      default:
+        return "AI Generator";
+    }
+  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 lg:left-[22rem] z-40">
@@ -38,7 +72,7 @@ export function BottomPromptInput({
                   <div className="flex items-center gap-2">
                     <Settings className="h-4 w-4 text-primary" />
                     <label className="text-sm font-medium text-white">Advanced Settings</label>
-                    <span className="text-xs text-gray-400">(Video Generator)</span>
+                    <span className="text-xs text-gray-400">({getToolName()})</span>
                   </div>
                   <ChevronUp 
                     className={`h-4 w-4 text-gray-400 transition-all ${showAdvanced ? 'rotate-180' : ''}`} 
@@ -64,7 +98,7 @@ export function BottomPromptInput({
                 <div className="flex-1 relative">
                   <Textarea
                     className="min-h-[60px] max-h-32 resize-none bg-white/5 border-white/10 text-white placeholder:text-gray-500 pr-20 md:pl-4 pl-12"
-                    placeholder="Tell me what you want to create with Video Generator..."
+                    placeholder={getPlaceholderText()}
                     value={prompt}
                     onChange={(e) => onPromptChange(e.target.value)}
                   />

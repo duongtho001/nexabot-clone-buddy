@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GeneratorState, VideoConfig, VideoResult } from "@/types/generator";
+import { GeneratorState, VideoConfig, VoiceConfig, ImageConfig, VideoResult, AITool } from "@/types/generator";
 
 const initialVideoConfig: VideoConfig = {
   veoModel: "veo-3.0-generate-preview",
@@ -8,13 +8,32 @@ const initialVideoConfig: VideoConfig = {
   duration: "8",
 };
 
+const initialVoiceConfig: VoiceConfig = {
+  model: "eleven_multilingual_v2",
+  voice: "9BWtsMINqrJLrRacOk9x", // Aria
+  stability: 0.5,
+  similarity: 0.75,
+  style: 0,
+  speakerBoost: true,
+};
+
+const initialImageConfig: ImageConfig = {
+  model: "dall-e-3",
+  size: "1024x1024",
+  style: "vivid",
+  quality: "standard",
+};
+
 const initialState: GeneratorState = {
   apiKey: "",
   prompt: "",
   negativePrompt: "",
   cinematicEnhancement: "",
   isGenerating: false,
+  activeTool: "video",
   videoConfig: initialVideoConfig,
+  voiceConfig: initialVoiceConfig,
+  imageConfig: initialImageConfig,
   videoResults: [],
 };
 
@@ -29,6 +48,27 @@ export function useGeneratorState() {
     setState(prev => ({
       ...prev,
       videoConfig: { ...prev.videoConfig, ...updates }
+    }));
+  };
+
+  const updateVoiceConfig = (updates: Partial<VoiceConfig>) => {
+    setState(prev => ({
+      ...prev,
+      voiceConfig: { ...prev.voiceConfig, ...updates }
+    }));
+  };
+
+  const updateImageConfig = (updates: Partial<ImageConfig>) => {
+    setState(prev => ({
+      ...prev,
+      imageConfig: { ...prev.imageConfig, ...updates }
+    }));
+  };
+
+  const setActiveTool = (tool: AITool) => {
+    setState(prev => ({
+      ...prev,
+      activeTool: tool
     }));
   };
 
@@ -59,6 +99,9 @@ export function useGeneratorState() {
     state,
     updateState,
     updateVideoConfig,
+    updateVoiceConfig,
+    updateImageConfig,
+    setActiveTool,
     addVideoResult,
     updateVideoResult,
     removeVideoResult,

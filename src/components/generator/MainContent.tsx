@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Menu, Settings, Video } from "lucide-react";
+import { Menu, Settings, Video, Film, Mic, Image as ImageIcon } from "lucide-react";
 import { VideoResult } from "@/components/generator/VideoResult";
-import { VideoResult as VideoResultType } from "@/types/generator";
+import { VideoResult as VideoResultType, AITool } from "@/types/generator";
 
 interface MainContentProps {
   videoResults: VideoResultType[];
+  activeTool: AITool;
   onOpenSidebar: () => void;
   onOpenSettings: () => void;
   onDeleteResult: (id: string) => void;
@@ -14,6 +15,7 @@ interface MainContentProps {
 
 export function MainContent({ 
   videoResults,
+  activeTool,
   onOpenSidebar, 
   onOpenSettings,
   onDeleteResult,
@@ -22,6 +24,38 @@ export function MainContent({
 }: MainContentProps) {
   const completedCount = videoResults.filter(r => r.status === 'completed').length;
   const generatingCount = videoResults.filter(r => r.status === 'generating').length;
+
+  const getToolIcon = () => {
+    switch (activeTool) {
+      case 'video': return Video;
+      case 'filmmaker': return Film;
+      case 'voice': return Mic;
+      case 'microstock': return ImageIcon;
+      default: return Video;
+    }
+  };
+
+  const getToolName = () => {
+    switch (activeTool) {
+      case 'video': return 'Video Generator';
+      case 'filmmaker': return 'Filmmaker';
+      case 'voice': return 'Voice Over Generator';
+      case 'microstock': return 'Microstock Generator';
+      default: return 'AI Generator';
+    }
+  };
+
+  const getContentTitle = () => {
+    switch (activeTool) {
+      case 'video': return 'Video Gallery';
+      case 'filmmaker': return 'Film Projects';
+      case 'voice': return 'Voice Library';
+      case 'microstock': return 'Image Collection';
+      default: return 'Content Gallery';
+    }
+  };
+
+  const ToolIcon = getToolIcon();
 
   return (
     <div className="lg:ml-[22rem] min-h-screen flex flex-col">
@@ -38,10 +72,10 @@ export function MainContent({
 
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-lg bg-gradient-to-r from-white/10 to-white/5">
-            <Video className="h-5 w-5 text-primary" />
+            <ToolIcon className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <div className="text-sm font-medium text-white">Video Generator</div>
+            <div className="text-sm font-medium text-white">{getToolName()}</div>
           </div>
         </div>
 
@@ -61,10 +95,10 @@ export function MainContent({
             <div className="flex items-center justify-between p-4 lg:p-6 border-b border-white/10">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-gradient-to-r from-white/10 to-white/5">
-                  <Video className="h-5 w-5 text-primary" />
+                  <ToolIcon className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-semibold text-white">Content Gallery</h1>
+                  <h1 className="text-xl font-semibold text-white">{getContentTitle()}</h1>
                   <p className="text-sm text-gray-400">
                     {completedCount} completed • {generatingCount} generating
                   </p>
@@ -77,7 +111,7 @@ export function MainContent({
                 /* Empty State */
                 <div className="h-full flex items-center justify-center text-center">
                   <div className="max-w-md">
-                    <Video className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                    <ToolIcon className="h-16 w-16 text-gray-600 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-white mb-2">No content yet</h3>
                     <p className="text-gray-400 mb-6">Generate your first content to get started!</p>
                     

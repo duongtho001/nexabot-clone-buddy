@@ -2,15 +2,56 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Key, Sparkles, Video, Film, Mic, Image as ImageIcon, X, House } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AITool } from "@/types/generator";
 
 interface SidebarProps {
   apiKey: string;
   onApiKeyChange: (value: string) => void;
   isOpen: boolean;
   onClose: () => void;
+  activeTool?: AITool;
+  onToolChange?: (tool: AITool) => void;
 }
 
-export function Sidebar({ apiKey, onApiKeyChange, isOpen, onClose }: SidebarProps) {
+export function Sidebar({ 
+  apiKey, 
+  onApiKeyChange, 
+  isOpen, 
+  onClose, 
+  activeTool = 'video',
+  onToolChange 
+}: SidebarProps) {
+  
+  const aiTools = [
+    {
+      id: 'video' as AITool,
+      name: 'Video Generator',
+      description: 'Create stunning videos from text prompts using Google Veo models',
+      icon: Video,
+      iconColor: 'text-primary'
+    },
+    {
+      id: 'filmmaker' as AITool,
+      name: 'Filmmaker',
+      description: 'Professional video editing with AI-powered effects and transitions',
+      icon: Film,
+      iconColor: 'text-gray-400'
+    },
+    {
+      id: 'voice' as AITool,
+      name: 'Voice Over Generator',
+      description: 'Generate natural-sounding voice overs for your content',
+      icon: Mic,
+      iconColor: 'text-gray-400'
+    },
+    {
+      id: 'microstock' as AITool,
+      name: 'Microstock Generator',
+      description: 'Create high-quality stock images and graphics instantly',
+      icon: ImageIcon,
+      iconColor: 'text-gray-400'
+    }
+  ];
   return (
     <>
       {/* Mobile overlay */}
@@ -71,65 +112,34 @@ export function Sidebar({ apiKey, onApiKeyChange, isOpen, onClose }: SidebarProp
                 </label>
               </div>
               <div className="space-y-2">
-                {/* Video Generator - Active */}
-                <button className="w-full p-3 rounded-lg text-left transition-all duration-200 bg-primary/20 border border-primary/30 shadow-lg shadow-primary/10">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-r from-white/10 to-white/5">
-                      <Video className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-white">Video Generator</div>
-                      <div className="text-xs text-gray-400 line-clamp-2">
-                        Create stunning videos from text prompts using Google Veo models
+                {aiTools.map((tool) => {
+                  const IconComponent = tool.icon;
+                  const isActive = activeTool === tool.id;
+                  
+                  return (
+                    <button 
+                      key={tool.id}
+                      onClick={() => onToolChange?.(tool.id)}
+                      className={`w-full p-3 rounded-lg text-left transition-all duration-200 ${
+                        isActive 
+                          ? 'bg-primary/20 border border-primary/30 shadow-lg shadow-primary/10' 
+                          : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-gradient-to-r from-white/10 to-white/5">
+                          <IconComponent className={`h-5 w-5 ${isActive ? 'text-primary' : 'text-gray-400'}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-white">{tool.name}</div>
+                          <div className="text-xs text-gray-400 line-clamp-2">
+                            {tool.description}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </button>
-
-                {/* Filmmaker */}
-                <button className="w-full p-3 rounded-lg text-left transition-all duration-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-r from-white/10 to-white/5">
-                      <Film className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-white">Filmmaker</div>
-                      <div className="text-xs text-gray-400 line-clamp-2">
-                        Professional video editing with AI-powered effects and transitions
-                      </div>
-                    </div>
-                  </div>
-                </button>
-
-                {/* Voice Over Generator */}
-                <button className="w-full p-3 rounded-lg text-left transition-all duration-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-r from-white/10 to-white/5">
-                      <Mic className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-white">Voice Over Generator</div>
-                      <div className="text-xs text-gray-400 line-clamp-2">
-                        Generate natural-sounding voice overs for your content
-                      </div>
-                    </div>
-                  </div>
-                </button>
-
-                {/* Microstock Generator */}
-                <button className="w-full p-3 rounded-lg text-left transition-all duration-200 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-r from-white/10 to-white/5">
-                      <ImageIcon className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-white">Microstock Generator</div>
-                      <div className="text-xs text-gray-400 line-clamp-2">
-                        Create high-quality stock images and graphics instantly
-                      </div>
-                    </div>
-                  </div>
-                </button>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

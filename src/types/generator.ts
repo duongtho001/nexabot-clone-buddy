@@ -1,8 +1,26 @@
+export type AITool = 'video' | 'filmmaker' | 'voice' | 'microstock';
+
 export interface VideoConfig {
   veoModel: string;
   aspectRatio: string;
   personGeneration: string;
   duration: string;
+}
+
+export interface VoiceConfig {
+  model: string;
+  voice: string;
+  stability: number;
+  similarity: number;
+  style: number;
+  speakerBoost: boolean;
+}
+
+export interface ImageConfig {
+  model: string;
+  size: string;
+  style: string;
+  quality: string;
 }
 
 export interface VideoResult {
@@ -22,7 +40,10 @@ export interface GeneratorState {
   negativePrompt: string;
   cinematicEnhancement: string;
   isGenerating: boolean;
+  activeTool: AITool;
   videoConfig: VideoConfig;
+  voiceConfig: VoiceConfig;
+  imageConfig: ImageConfig;
   videoResults: VideoResult[];
 }
 

@@ -10,7 +10,10 @@ export default function Generator() {
   const { 
     state, 
     updateState, 
-    updateVideoConfig, 
+    updateVideoConfig,
+    updateVoiceConfig,
+    updateImageConfig,
+    setActiveTool,
     addVideoResult, 
     updateVideoResult, 
     removeVideoResult 
@@ -107,13 +110,20 @@ export default function Generator() {
           onApiKeyChange={(value) => updateState({ apiKey: value })}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
+          activeTool={state.activeTool}
+          onToolChange={setActiveTool}
         />
 
         {/* Right Settings Sidebar */}
         <SettingsSidebar
-          config={state.videoConfig}
+          videoConfig={state.videoConfig}
+          voiceConfig={state.voiceConfig}
+          imageConfig={state.imageConfig}
           negativePrompt={state.negativePrompt}
-          onConfigChange={updateVideoConfig}
+          activeTool={state.activeTool}
+          onVideoConfigChange={updateVideoConfig}
+          onVoiceConfigChange={updateVoiceConfig}
+          onImageConfigChange={updateImageConfig}
           onNegativePromptChange={(value) => updateState({ negativePrompt: value })}
           isOpen={settingsOpen}
           onClose={() => setSettingsOpen(false)}
@@ -122,6 +132,7 @@ export default function Generator() {
         {/* Main Content */}
         <MainContent
           videoResults={state.videoResults}
+          activeTool={state.activeTool}
           onOpenSidebar={() => setSidebarOpen(true)}
           onOpenSettings={() => setSettingsOpen(true)}
           onDeleteResult={removeVideoResult}
@@ -134,6 +145,7 @@ export default function Generator() {
           prompt={state.prompt}
           isGenerating={state.isGenerating}
           apiKey={state.apiKey}
+          activeTool={state.activeTool}
           onPromptChange={(value) => updateState({ prompt: value })}
           onGenerate={handleGenerate}
         />
