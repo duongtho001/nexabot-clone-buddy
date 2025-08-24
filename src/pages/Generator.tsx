@@ -148,6 +148,7 @@ export default function Generator() {
           activeTool={state.activeTool}
           onPromptChange={(value) => updateState({ prompt: value })}
           onGenerate={handleGenerate}
+          onOpenSettings={() => setSettingsOpen(true)}
         />
 
         {/* Toast notification area */}

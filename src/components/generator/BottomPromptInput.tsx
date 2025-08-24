@@ -12,6 +12,7 @@ interface BottomPromptInputProps {
   activeTool: AITool;
   onPromptChange: (value: string) => void;
   onGenerate: () => void;
+  onOpenSettings: () => void;
 }
 
 export function BottomPromptInput({
@@ -20,9 +21,9 @@ export function BottomPromptInput({
   apiKey,
   activeTool,
   onPromptChange,
-  onGenerate
+  onGenerate,
+  onOpenSettings
 }: BottomPromptInputProps) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const getPlaceholderText = () => {
     switch (activeTool) {
@@ -66,17 +67,15 @@ export function BottomPromptInput({
               <div className="mb-4 hidden lg:block">
                 <Button
                   variant="ghost"
-                  className="flex items-center justify-between w-full mb-3 group"
-                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="flex items-center justify-between w-full mb-3 group hover:bg-white/5"
+                  onClick={onOpenSettings}
                 >
                   <div className="flex items-center gap-2">
                     <Settings className="h-4 w-4 text-primary" />
-                    <label className="text-sm font-medium text-white">Advanced Settings</label>
+                    <label className="text-sm font-medium text-white cursor-pointer">Advanced Settings</label>
                     <span className="text-xs text-gray-400">({getToolName()})</span>
                   </div>
-                  <ChevronUp 
-                    className={`h-4 w-4 text-gray-400 transition-all ${showAdvanced ? 'rotate-180' : ''}`} 
-                  />
+                  <ChevronUp className="h-4 w-4 text-gray-400" />
                 </Button>
               </div>
 
