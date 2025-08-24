@@ -136,7 +136,7 @@ export function BottomPromptInput({
                     variant="outline"
                     size="sm"
                     disabled={!apiKey || !prompt.trim()}
-                    className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/30 hover:border-purple-400/50 hover:bg-gradient-to-r hover:from-purple-500/30 hover:to-pink-500/30 text-purple-200 hover:text-purple-100 transition-all duration-200"
+                    className="group relative overflow-hidden bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 hover:border-purple-400/40 text-purple-200 hover:text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-500/20 before:to-pink-500/20 before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700"
                     title="Transform your prompt into a detailed cinematic description with professional camera work, lighting, character details, and atmosphere"
                   >
                     <Sparkles className="h-3 w-3 mr-1.5" />
