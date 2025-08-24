@@ -57,15 +57,15 @@ export const AITools = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {tools.map((tool, index) => (
-            <Card key={index} className="glass-effect border-white/10 p-6 hover:scale-105 transition-all duration-300 shadow-card">
-              <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${tool.color} flex items-center justify-center mb-4`}>
+            <Card key={index} className={`glass-effect border-white/10 p-6 hover-scale transition-all duration-300 shadow-card animate-fade-in animate-stagger-${index + 1}`}>
+              <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${tool.color} flex items-center justify-center mb-4 animate-float`} style={{animationDelay: `${index * 0.5}s`}}>
                 <tool.icon className="w-6 h-6 text-white" />
               </div>
               
               <h3 className="text-xl font-semibold mb-3">{tool.title}</h3>
               <p className="text-muted-foreground mb-6">{tool.description}</p>
               
-              <Button variant="glass" className="w-full">
+              <Button variant="glass" className="w-full hover-scale">
                 Try Now
               </Button>
             </Card>
