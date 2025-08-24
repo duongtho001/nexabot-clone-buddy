@@ -143,7 +143,7 @@ export function SettingsSidebar({
   };
 
   return (
-    <div className={`fixed top-6 right-6 w-80 z-50 transition-transform duration-300 lg:hidden ${isOpen ? 'translate-x-0' : 'translate-x-[calc(100%+1.5rem)]'}`}
+    <div className={`fixed top-6 right-6 w-80 z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-[calc(100%+1.5rem)]'}`}
          style={{ height: 'calc(100vh - 3rem)' }}>
       <div className="rounded-lg border text-card-foreground shadow-sm h-full backdrop-blur-xl bg-white/[0.02] border-white/10 overflow-hidden flex flex-col">
         <div className="flex flex-col space-y-1.5 p-6 border-b border-white/10 pb-4">
