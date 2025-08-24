@@ -20,20 +20,22 @@ export const Navigation = () => {
             <Link to="/" className={`text-sm font-medium transition-colors hover:text-primary ${location.pathname === '/' ? 'text-primary' : 'text-muted-foreground'}`}>
               Home
             </Link>
-            <Link to="/features" className={`text-sm font-medium transition-colors hover:text-primary ${location.pathname === '/features' ? 'text-primary' : 'text-muted-foreground'}`}>
+            <a href="#ai-tools" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Features
-            </Link>
-            <Link to="/how-it-works" className={`text-sm font-medium transition-colors hover:text-primary ${location.pathname === '/how-it-works' ? 'text-primary' : 'text-muted-foreground'}`}>
+            </a>
+            <a href="#how-it-works" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               How it Works
-            </Link>
+            </a>
             <Link to="/generator" className={`text-sm font-medium transition-colors hover:text-primary ${location.pathname === '/generator' ? 'text-primary' : 'text-muted-foreground'}`}>
               Generator
             </Link>
           </div>
 
-          <Button variant="hero" size="sm">
-            Get Started
-          </Button>
+          <Link to="/generator">
+            <Button variant="hero" size="sm">
+              Get Started
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>

@@ -37,7 +37,7 @@ const tools = [
 
 export const AITools = () => {
   return (
-    <section className="py-20 relative">
+    <section id="ai-tools" className="py-20 relative">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-white/10">
